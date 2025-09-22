@@ -4,7 +4,7 @@ trigger:
       - main
 
 jobs:
-- job: terraforminitplan
+- job: TerraformInitPlan
   displayName: Terraform Init and Plan
   pool: self_test
   steps:
@@ -26,12 +26,11 @@ jobs:
     inputs:
       provider: 'azurerm'
       command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
       environmentServiceNameAzureRM: 'apptestconnect01ad'
 
-- job: manualvalidation
+- job: ManualValidation
   displayName: Manual Validation
-  dependsOn: terraforminitplan
+  dependsOn: TerraformInitPlan
   pool: server
   steps:
   - task: ManualValidation@1
@@ -42,12 +41,11 @@ jobs:
 
 - job: TerraformApply
   displayName: Terraform Apply
-  dependsOn: manualvalidation
+  dependsOn: ManualValidation
   pool: self_test
   steps:
   - task: TerraformTask@5
     inputs:
       provider: 'azurerm'
       command: 'apply'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
       environmentServiceNameAzureRM: 'apptestconnect01ad'
