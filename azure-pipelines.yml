@@ -8,26 +8,25 @@ jobs:
   displayName: Terraform Init and Plan
   pool: self_test
   steps:
+  - checkout: self
   - task: TerraformInstaller@1
     inputs:
       terraformVersion: 'latest'
-
   - task: TerraformTask@5
     inputs:
       provider: 'azurerm'
       command: 'init'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
-      backendServiceArm: 'apptestconnect01ad'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todo_infra'
+      backendServiceArm: 'apptestconnect03ad'
       backendAzureRmStorageAccountName: 'testadtest01'
       backendAzureRmContainerName: 'tfstate'
       backendAzureRmKey: 'terraform.tfstate'
-
   - task: TerraformTask@5
     inputs:
       provider: 'azurerm'
       command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
-      environmentServiceNameAzureRM: 'apptestconnect01ad'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todo_infra'
+      environmentServiceNameAzureRM: 'apptestconnect03ad'
 
 - job: ManualValidation
   displayName: Manual Validation
@@ -38,16 +37,17 @@ jobs:
     inputs:
       notifyUsers: 'rahulgtripathi@gmail.com'
       approvers: 'rahulgtripathi@gmail.com'
-      instructions: 'check please'
+      instructions: 'Check the Terraform plan before approval'
 
 - job: TerraformApply
   displayName: Terraform Apply
   dependsOn: ManualValidation
   pool: self_test
   steps:
+  - checkout: self
   - task: TerraformTask@5
     inputs:
       provider: 'azurerm'
       command: 'apply'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
-      environmentServiceNameAzureRM: 'apptestconnect01ad'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todo_infra'
+      environmentServiceNameAzureRM: 'apptestconnect03ad'
