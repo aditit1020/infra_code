@@ -1,26 +1,53 @@
-trigger: none
-
-pool: self_test
+trigger:
+  branches:
+    include:
+      - main
 
 jobs:
- - job: terraforminit
-   displayName: Terraform-Init
-   steps:
-      - task: TerraformTask@5
-        inputs:
-          provider: 'azurerm'
-          command: 'init'
-          backendServiceArm: 'appconnecttest'
-          backendAzureRmStorageAccountName: 'strgadi01'
-          backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'terraform.tfstate'
+- job: terraforminitplan
+  displayName: Terraform Init and Plan
+  pool: self_test
+  steps:
+  - task: TerraformInstaller@1
+    inputs:
+      terraformVersion: 'latest'
 
- - job: terraformplan
-   displayName: Terraform-Plan
-   dependsOn: terraforminit
-   steps:
-    - task: TerraformTask@5
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        environmentServiceNameAzureRM: 'appconnecttest'
+  - task: TerraformTask@5
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
+      backendServiceArm: 'appconnecttest'
+      backendAzureRmStorageAccountName: 'testadtest01'
+      backendAzureRmContainerName: 'tfstate'
+      backendAzureRmKey: 'terraform.tfstate'
+
+  - task: TerraformTask@5
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
+      environmentServiceNameAzureRM: 'appconnecttest'
+
+- job: manualvalidation
+  displayName: Manual Validation
+  dependsOn: terraforminitplan
+  pool: server
+  steps:
+  - task: ManualValidation@1
+    inputs:
+      notifyUsers: 'rahulgtripathi@gmail.com'
+      approvers: 'rahulgtripathi@gmail.com'
+      instructions: 'check please'
+
+- job: TerraformApply
+  displayName: Terraform Apply
+  dependsOn: manualvalidation
+  pool: self_test
+  steps:
+  - task: TerraformTask@5
+    inputs:
+      provider: 'azurerm'
+      command: 'apply'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
+      environmentServiceNameAzureRM: 'appconnecttest'
