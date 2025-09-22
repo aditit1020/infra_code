@@ -17,7 +17,7 @@ jobs:
       provider: 'azurerm'
       command: 'init'
       workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
-      backendServiceArm: 'appconnecttest'
+      backendServiceArm: 'apptestconnect01ad'
       backendAzureRmStorageAccountName: 'testadtest01'
       backendAzureRmContainerName: 'tfstate'
       backendAzureRmKey: 'terraform.tfstate'
@@ -27,7 +27,7 @@ jobs:
       provider: 'azurerm'
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
-      environmentServiceNameAzureRM: 'appconnecttest'
+      environmentServiceNameAzureRM: 'apptestconnect01ad'
 
 - job: manualvalidation
   displayName: Manual Validation
@@ -50,4 +50,4 @@ jobs:
       provider: 'azurerm'
       command: 'apply'
       workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
-      environmentServiceNameAzureRM: 'appconnecttest'
+      environmentServiceNameAzureRM: 'apptestconnect01ad'
