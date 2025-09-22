@@ -26,6 +26,7 @@ jobs:
     inputs:
       provider: 'azurerm'
       command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
       environmentServiceNameAzureRM: 'apptestconnect01ad'
 
 - job: ManualValidation
@@ -48,4 +49,5 @@ jobs:
     inputs:
       provider: 'azurerm'
       command: 'apply'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/todoapp_infra'
       environmentServiceNameAzureRM: 'apptestconnect01ad'
